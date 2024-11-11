@@ -1,0 +1,46 @@
+.chatPageContainer{
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+    margin: 5px;
+}
+
+.sideBar{
+    box-sizing:border-box;
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    max-width: 200px;
+    min-width: 150px;
+    border-radius: 5px;
+    margin: 5px; /* 设置 FriendList 右侧的外边距 */
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+}
+
+.chatContainer {
+    display: flex;
+    flex: 1;
+    border-radius: 10px;
+    border-color: rgb(0, 0, 0);
+    border-style: solid;
+    margin: 5px;
+    padding: 10px;
+}
+.chat{
+    flex: 1;
+}
+
+.inputContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+
+
+
+
+

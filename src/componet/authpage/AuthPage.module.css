@@ -1,0 +1,136 @@
+.authPageContainer{
+    display: flex;
+    flex-direction: column;
+    box-sizing:content-box;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+    flex: 1;
+
+    margin:10px;
+
+    background-color: #0a73d6;
+    background-image:
+            radial-gradient(closest-side, rgb(56, 144, 202), rgba(60, 144, 202, 0)),
+            radial-gradient(closest-side, rgb(62, 60, 196), rgba(62, 50, 196, 0)),
+            radial-gradient(closest-side, rgb(71, 134, 228), rgba(71, 134, 210, 0)),
+            radial-gradient(closest-side, rgb(40, 60, 220), rgba(40, 79, 220, 0)),
+            radial-gradient(closest-side, rgb(87, 207, 133), rgba(87, 190, 133, 0));
+
+    background-size:
+            130vmax 130vmax,
+            80vmax 80vmax,
+            90vmax 90vmax,
+            110vmax 110vmax,
+            90vmax 90vmax;
+    background-position:
+            -80vmax -80vmax,
+            60vmax -30vmax,
+            10vmax 10vmax,
+            -30vmax -10vmax,
+            50vmax 50vmax;
+    background-repeat: no-repeat;
+    animation: 10s movement linear infinite;
+}
+
+@keyframes movement {
+    0%, 100% {
+        background-size:
+                130vmax 130vmax,
+                80vmax 80vmax,
+                90vmax 90vmax,
+                110vmax 110vmax,
+                90vmax 90vmax;
+        background-position:
+                -80vmax -80vmax,
+                60vmax -30vmax,
+                10vmax 10vmax,
+                -30vmax -10vmax,
+                50vmax 50vmax;
+    }
+    25% {
+        background-size:
+                100vmax 100vmax,
+                90vmax 90vmax,
+                100vmax 100vmax,
+                90vmax 90vmax,
+                60vmax 60vmax;
+        background-position:
+                -60vmax -90vmax,
+                50vmax -40vmax,
+                0vmax -20vmax,
+                -40vmax -20vmax,
+                40vmax 60vmax;
+    }
+    50% {
+        background-size:
+                80vmax 80vmax,
+                110vmax 110vmax,
+                80vmax 80vmax,
+                60vmax 60vmax,
+                80vmax 80vmax;
+        background-position:
+                -50vmax -70vmax,
+                40vmax -30vmax,
+                10vmax 0vmax,
+                20vmax 10vmax,
+                30vmax 70vmax;
+    }
+    75% {
+        background-size:
+                90vmax 90vmax,
+                90vmax 90vmax,
+                100vmax 100vmax,
+                90vmax 90vmax,
+                70vmax 70vmax;
+        background-position:
+                -50vmax -40vmax,
+                50vmax -30vmax,
+                20vmax 0vmax,
+                -10vmax 10vmax,
+                40vmax 60vmax;
+    }
+}
+.formOutSideContainer{
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.formContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.formItem {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 15px; /* Add spacing between form items */
+}
+.formItem label {
+    font-size: 16px;
+    color: #333;
+    width: 60px; /* 给标签设置固定宽度 */
+    margin-right: 10px; /* 标签与输入框之间的间距 */
+}
+.formItem input {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+.formContainer button {
+    padding: 5px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #1b79c3; /* 绿色背景 */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}

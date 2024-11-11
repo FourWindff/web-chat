@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import React, {useRef} from "react";
+import ChatPage from "./componet/chatpage";
+import styles from "./App.module.css";
+import AuthPage from "./componet/authpage";
+import {useState} from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+export default function App() {
+    const [isLogin, setIsLogin] = useState(false);
+    const currenUser = useRef({username: '', userid: ''});
+
+    const handleLogin = (name, id) => {
+        currenUser.current.username = name;
+        currenUser.current.userid = id;
+        setIsLogin(true);
+    }
+    return (
+
+        <div className={styles.container}>
+            {isLogin ?
+                <ChatPage username={currenUser.current.username} userid={currenUser.current.userid}/>
+                :
+                <AuthPage onLogin={handleLogin}/>}
+        </div>
+    );
 }
-
-export default App;

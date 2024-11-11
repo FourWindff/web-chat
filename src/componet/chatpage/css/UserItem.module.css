@@ -1,0 +1,18 @@
+
+.userItemContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 1rem;
+}
+.userInfoContainer{
+    display: flex;
+    flex-direction: column;
+    margin-left: 10px;
+}
+.userItemInfo{
+    font-size:large;
+    font-weight:bolder;
+    font-style: italic;
+    color: rgb(51, 141, 141);
+}

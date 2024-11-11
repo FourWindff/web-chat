@@ -1,0 +1,28 @@
+.itemContainer{
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    margin: 5px;
+
+    transition: box-shadow 0.1s linear; /* 添加过渡效果 */
+}
+.itemContainer:hover{
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
+}
+.itemInfo{
+    display: flex;
+    flex-direction: column;
+    text-overflow: ellipsis; /* 省略号处理 */
+    white-space: nowrap; /* 不换行 */
+}
+.itemUsername{
+    font-size: large;
+    font-weight:bolder;
+    font-style: italic;
+    color: rgb(51, 141, 141);
+}
+.itemLastMessage{
+    font-size: small;
+    color: rgb(134, 134, 134);
+}

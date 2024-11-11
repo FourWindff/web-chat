@@ -1,0 +1,41 @@
+//offer
+Object {
+    type: "offer",
+    sdp: "v=0\r\no=mozilla...THIS_IS_SDPARTA-99.0 545639701386370996 0 IN IP4 0.0.0.0\r\ns=-\r\nt=0 0\r\na=fingerprint:sha-256 87:F8:0F:3F:CC:D1:EF:BB:FD:BC:6D:44:28:2E:6C:BD:60:CB:D8:74:32:CA:D1:9A:9C:0D:CF:04:C2:E0:68:04\r\na=group:BUNDLE 0\r\na=ice-options:trickle\r\na=msid-semantic:WMS *\r\nm=video 9 UDP/TLS/RTP/SAVPF 120 124 121 125 126 127 97 98 123 122 119\r\nc=IN IP4 0.0.0.0\r\na=sendrecv\r\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\r\na=extmap:4 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=extmap:5 urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:6/recvonly http://www.webrtc.org/experiments/rtp-hdrext/playout-delay\r\na=extmap:7 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r\na=fmtp:126 profile-level-id=42e01f;level-asymmetry-allowed=1;packetization-mode=1\r\na=fmtp:97 profile-level-id=42e01f;level-asymmetry-allowed=1\r\na=fmtp:120 max-fs=12288;max-fr=60\r\na=fmtp:124 apt=120\r\na=fmtp:121 max-fs=12288;max-fr=60\r\na=fmtp:125 apt=121\r\na=fmtp:127 apt=126\r\na=fmtp:98 apt=97\r\na=fmtp:119 apt=122\r\na=ice-pwd:5f72cd5db2ad6919fd754095bdba7cf5\r\na=ice-ufrag:b51cf412\r\na=mid:0\r\na=msid:{5183aaa1-358f-40df-bda2-fbee9f0dddcd} {ec69447f-38ab-4b95-ba36-9e7f9bdc250b}\r\na=rtcp-fb:120 nack\r\na=rtcp-fb:120 nack pli\r\na=rtcp-fb:120 ccm fir\r\na=rtcp-fb:120 goog-remb\r\na=rtcp-fb:120 transport-cc\r\na=rtcp-fb:121 nack\r\na=rtcp-fb:121 nack pli\r\na=rtcp-fb:121 ccm fir\r\na=rtcp-fb:121 goog-remb\r\na=rtcp-fb:121 transport-cc\r\na=rtcp-fb:126 nack\r\na=rtcp-fb:126 nack pli\r\na=rtcp-fb:126 ccm fir\r\na=rtcp-fb:126 goog-remb\r\na=rtcp-fb:126 transport-cc\r\na=rtcp-fb:97 nack\r\na=rtcp-fb:97 nack pli\r\na=rtcp-fb:97 ccm fir\r\na=rtcp-fb:97 goog-remb\r\na=rtcp-fb:97 transport-cc\r\na=rtcp-fb:123 nack\r\na=rtcp-fb:123 nack pli\r\na=rtcp-fb:123 ccm fir\r\na=rtcp-fb:123 goog-remb\r\na=rtcp-fb:123 transport-cc\r\na=rtcp-fb:122 nack\r\na=rtcp-fb:122 nack pli\r\na=rtcp-fb:122 ccm fir\r\na=rtcp-fb:122 goog-remb\r\na=rtcp-fb:122 transport-cc\r\na=rtcp-mux\r\na=rtcp-rsize\r\na=rtpmap:120 VP8/90000\r\na=rtpmap:124 rtx/90000\r\na=rtpmap:121 VP9/90000\r\na=rtpmap:125 rtx/90000\r\na=rtpmap:126 H264/90000\r\na=rtpmap:127 rtx/90000\r\na=rtpmap:97 H264/90000\r\na=rtpmap:98 rtx/90000\r\na=rtpmap:123 ulpfec/90000\r\na=rtpmap:122 red/90000\r\na=rtpmap:119 rtx/90000\r\na=setup:actpass\r\na=ssrc:2518777623 cname:{1f9f2fe4-6336-461f-919e-71e5617a7364}\r\na=ssrc:2395804285 cname:{1f9f2fe4-6336-461f-919e-71e5617a7364}\r\na=ssrc-group:FID 2518777623 2395804285\r\n"
+}
+//answer
+Object {
+    type: "answer",
+    sdp: "v=0\r\no=mozilla...THIS_IS_SDPARTA-99.0 545639701386370996 1 IN IP4 0.0.0.0\r\ns=-\r\nt=0 0\r\na=fingerprint:sha-256 87:F8:0F:3F:CC:D1:EF:BB:FD:BC:6D:44:28:2E:6C:BD:60:CB:D8:74:32:CA:D1:9A:9C:0D:CF:04:C2:E0:68:04\r\na=group:BUNDLE 0\r\na=ice-options:trickle\r\na=msid-semantic:WMS *\r\nm=video 9 UDP/TLS/RTP/SAVPF 120 124 121 125 126 127 97 98 123 122 119\r\nc=IN IP4 0.0.0.0\r\na=sendrecv\r\na=extmap:3 urn:ietf:params:rtp-hdrext:sdes:mid\r\na=extmap:4 http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time\r\na=extmap:5 urn:ietf:params:rtp-hdrext:toffset\r\na=extmap:7 http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01\r\na=fmtp:126 profile-level-id=42e01f;level-asymmetry-allowed=1;packetization-mode=1\r\na=fmtp:97 profile-level-id=42e01f;level-asymmetry-allowed=1\r\na=fmtp:120 max-fs=12288;max-fr=60\r\na=fmtp:124 apt=120\r\na=fmtp:121 max-fs=12288;max-fr=60\r\na=fmtp:125 apt=121\r\na=fmtp:127 apt=126\r\na=fmtp:98 apt=97\r\na=fmtp:119 apt=122\r\na=ice-pwd:5f72cd5db2ad6919fd754095bdba7cf5\r\na=ice-ufrag:b51cf412\r\na=mid:0\r\na=msid:{5183aaa1-358f-40df-bda2-fbee9f0dddcd} {ec69447f-38ab-4b95-ba36-9e7f9bdc250b}\r\na=rtcp-fb:120 nack\r\na=rtcp-fb:120 nack pli\r\na=rtcp-fb:120 ccm fir\r\na=rtcp-fb:120 goog-remb\r\na=rtcp-fb:120 transport-cc\r\na=rtcp-fb:121 nack\r\na=rtcp-fb:121 nack pli\r\na=rtcp-fb:121 ccm fir\r\na=rtcp-fb:121 goog-remb\r\na=rtcp-fb:121 transport-cc\r\na=rtcp-fb:126 nack\r\na=rtcp-fb:126 nack pli\r\na=rtcp-fb:126 ccm fir\r\na=rtcp-fb:126 goog-remb\r\na=rtcp-fb:126 transport-cc\r\na=rtcp-fb:97 nack\r\na=rtcp-fb:97 nack pli\r\na=rtcp-fb:97 ccm fir\r\na=rtcp-fb:97 goog-remb\r\na=rtcp-fb:97 transport-cc\r\na=rtcp-fb:123 nack\r\na=rtcp-fb:123 nack pli\r\na=rtcp-fb:123 ccm fir\r\na=rtcp-fb:123 goog-remb\r\na=rtcp-fb:123 transport-cc\r\na=rtcp-fb:122 nack\r\na=rtcp-fb:122 nack pli\r\na=rtcp-fb:122 ccm fir\r\na=rtcp-fb:122 goog-remb\r\na=rtcp-fb:122 transport-cc\r\na=rtcp-mux\r\na=rtcp-rsize\r\na=rtpmap:120 VP8/90000\r\na=rtpmap:124 rtx/90000\r\na=rtpmap:121 VP9/90000\r\na=rtpmap:125 rtx/90000\r\na=rtpmap:126 H264/90000\r\na=rtpmap:127 rtx/90000\r\na=rtpmap:97 H264/90000\r\na=rtpmap:98 rtx/90000\r\na=rtpmap:123 ulpfec/90000\r\na=rtpmap:122 red/90000\r\na=rtpmap:119 rtx/90000\r\na=setup:active\r\na=ssrc:2518777623 cname:{1f9f2fe4-6336-461f-919e-71e5617a7364}\r\na=ssrc:2395804285 cname:{1f9f2fe4-6336-461f-919e-71e5617a7364}\r\na=ssrc-group:FID 2518777623 2395804285\r\n"
+}
+//event.candidate
+RTCIceCandidate {
+    candidate: "candidate:1 1 UDP 1685987327 210.21.126.228 7263 typ srflx raddr 172.16.89.241 rport 56932",
+    sdpMid: "0",
+    sdpMLineIndex: 0,
+    foundation: "1",
+    component: "rtp",
+    priority: 1685987327,
+    address: "210.21.126.228",
+    protocol: "udp",
+    port: 7263,
+    type: "srflx"
+}
+
+object{
+    type: 'chat' 'file' 'link'  'init' 'login'
+    sourceUserId: '1',
+    targetUserId: '2',
+    data:object 'blob'
+}
+//初始化数据包
+//当type为init时targetUserId、data都为null，服务器需要返回用户列表（data）
+
+//登录
+//交换数据包
+//当type为chat file 时data需要保存在服务器
+//当type为link时不需要保存
+
+
+package.json
+"start": "react-scripts start",

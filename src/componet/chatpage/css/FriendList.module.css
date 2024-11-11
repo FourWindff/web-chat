@@ -1,0 +1,8 @@
+.listContainer {
+    box-sizing:border-box;
+    width: 95%;
+    height: 100%;
+    
+    border-radius: 5px;
+    margin: 5px; /* 设置 FriendList 右侧的外边距 */
+}
