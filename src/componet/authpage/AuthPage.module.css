@@ -13,10 +13,10 @@
     background-color: #0a73d6;
     background-image:
             radial-gradient(closest-side, rgb(56, 144, 202), rgba(60, 144, 202, 0)),
-            radial-gradient(closest-side, rgb(62, 60, 196), rgba(62, 50, 196, 0)),
+            radial-gradient(closest-side, rgb(122, 121, 228), rgba(62, 50, 196, 0)),
             radial-gradient(closest-side, rgb(71, 134, 228), rgba(71, 134, 210, 0)),
-            radial-gradient(closest-side, rgb(40, 60, 220), rgba(40, 79, 220, 0)),
-            radial-gradient(closest-side, rgb(87, 207, 133), rgba(87, 190, 133, 0));
+            radial-gradient(closest-side, rgb(77, 92, 233), rgba(40, 79, 220, 0)),
+            radial-gradient(closest-side, rgb(23, 232, 103), rgba(87, 190, 133, 0));
 
     background-size:
             130vmax 130vmax,

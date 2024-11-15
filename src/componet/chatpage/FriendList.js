@@ -7,10 +7,10 @@ export default function FriendList({ friendList, onSelectFriend }) {
     <div className={styles.listContainer}>
       {friendList.map((friend) => (
         <FriendItem
-          key={friend.userid}
+          key={friend.userId}
           username={friend.username}
           lastMessage="Last message"
-          onSelect={() => onSelectFriend(friend.userid)}
+          onSelect={() => onSelectFriend(friend.userId)}
         />
       ))}
     </div>

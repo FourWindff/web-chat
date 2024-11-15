@@ -1,53 +1,115 @@
 import React, {useState} from "react";
 import styles from './AuthPage.module.css'
+import {Button, Form} from "@douyinfe/semi-ui";
 
-export default function AuthPage({onLogin}) {
-    const [form, setForm] = useState({username: 'me', userid: ''});
-
-    const handleChange = (e) => {
-        const {name, value} = e.target;
-        setForm((prevForm) => ({...prevForm, [name]: value}));
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // 登录逻辑
-        console.log("Login form submitted:", {
-            username: form.username,
-            id: form.userid,
-        });
-        onLogin(form.username, form.userid);
-    };
-
-    return (
-        <div className={styles.authPageContainer}>
-            <div className={styles.formOutSideContainer}>
-                <h2>{"登录页面"}</h2>
-                <form onSubmit={handleSubmit} className={styles.formContainer}>
-                    <div className={styles.formItem}>
-                        <label>用户名:</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={form.username}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <div className={styles.formItem}>
-                        <label>ID:</label>
-                        <input
-                            type="text"
-                            name="userid"
-                            value={form.userid}
-                            onChange={handleChange}
-                            required
-                        />
-                    </div>
-                    <button type="submit">登录</button>
-                </form>
-            </div>
+function Login({onSignUp,onLogin}) {
+  const defaultServerAddress = "ws://localhost:8081/chat";
+  const defaultUserId = "1369050535";
+  const defaultPassword = "123";
+  return (
+    <div>
+      <h2>登录 <span>Web-Chat</span></h2>
+      <Form onSubmit={onLogin} style={{width: 400}}>
+        <Form.Input
+          field='serverAddress'
+          label='ServerAddress'
+          style={{width: '100%'}}
+          placeholder='Enter your serverAddress'
+          initValue={defaultServerAddress}
+        />
+        <Form.Input
+          field='userId'
+          label='userId'
+          style={{width: '100%'}}
+          placeholder='Enter your userid'
+          initValue={defaultUserId}/>
+        <Form.Input
+          field='password'
+          label='Password'
+          style={{width: '100%'}}
+          placeholder='Enter your password'
+          initValue={defaultPassword}/>
+        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+          <p>
+            <span>Or</span>
+            <Button
+              theme='borderless'
+              style={{
+                color: 'var(--semi-color-primary)',
+                marginLeft: 10,
+                cursor: 'pointer'
+              }}
+              onClick={onSignUp}>Sign up</Button>
+          </p>
+          <Button htmlType='submit' type="tertiary">Log in</Button>
         </div>
-    )
-        ;
+      </Form>
+    </div>
+  )
+}
+
+function Register({onBack, onRegister}) {
+  const defaultServerAddress = "ws://localhost:8081/chat";
+  return (
+    <div>
+      <h2>注册 <span>Web-Chat</span></h2>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+        <Form onSubmit={onRegister} style={{width: 400}}>
+          <Form.Input
+            field='serverAddress'
+            label='ServerAddress'
+            style={{width: '100%'}}
+            placeholder='Enter your serverAddress'
+            initValue={defaultServerAddress}
+          />
+          <Form.Input
+            field='username'
+            label='username'
+            style={{width: '100%'}}
+            placeholder='Enter your username'/>
+          <Form.Input
+            field='userId'
+            label='userId'
+            style={{width: '100%'}}
+            placeholder='Enter your userid'/>
+          <Form.Input
+            field='password'
+            label='Password'
+            style={{width: '100%'}}
+            placeholder='Enter your password'/>
+          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+            <Button theme='borderless'
+                    style={{
+                      color: 'var(--semi-color-primary)',
+                      marginLeft: 10,
+                      cursor: 'pointer'
+                    }} onClick={onBack}>Back</Button>
+            <Button htmlType='submit' type="tertiary">Registry</Button>
+          </div>
+        </Form>
+      </div>
+    </div>
+  )
+}
+
+export default function AuthPage({onLogin, onRegistry}) {
+  const [login, setLogin] = useState(true);
+
+  const handleAuthChange = () => {
+    setLogin(prev => !prev)
+  }
+
+  return (
+    <div className={styles.authPageContainer}>
+      <div className={styles.formOutSideContainer}>
+        {
+          login ?
+            <Login onLogin={onLogin} onSignUp={handleAuthChange}/>
+            :
+            <Register onRegister={onRegistry} onBack={handleAuthChange}/>
+        }
+      </div>
+    </div>
+  )
+    ;
 }

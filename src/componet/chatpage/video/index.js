@@ -1,35 +1,61 @@
 import styles from './video.module.css'
 import {SocketObject} from "../chatdata/SocketData";
-import {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react';
+import {forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
 import {Button} from "@douyinfe/semi-ui";
 
 
 const sendOffer = async (peerConnectionRef, sendMessage, userId, targetId) => {
     const pc = peerConnectionRef.current;
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    sendMessage(new SocketObject(userId, targetId, offer, 'link').parse2JSON());
-    console.log("Sending Offer")
+    //本地不存在offer才能发送offer
+    if (pc.signalingState !== "have-local-offer") {
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        sendMessage(new SocketObject(userId, targetId, offer, 'link').parse2JSON());
+        console.log("Sending Offer");
+        console.log("发送offer并设置local后的状态：",pc.signalingState);
+    } else {
+        console.error(`Sending Offer error current signalingState:${pc.signalingState}`)
+    }
 }
 
 const receivedOffer = async (peerConnectionRef, offer) => {
     const pc = peerConnectionRef.current;
-    await pc.setRemoteDescription(new RTCSessionDescription(offer));
-    console.log("Received Offer")
+    //本地不存在offer才能接收offer
+    if (pc.signalingState !== "have-local-offer") {
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        console.log("Received Offer");
+        console.log("接收到offer之后的状态：",pc.signalingState);
+
+    } else {
+        console.error(`Received Offer error current signalingState:${pc.signalingState}`)
+    }
 }
 
 const sendAnswer = async (peerConnectionRef, sendMessage, userId, targetId) => {
     const pc = peerConnectionRef.current;
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    sendMessage(new SocketObject(userId, targetId, answer, 'link').parse2JSON());
-    console.log("Sending Answer")
+    //本地存在对方的offer才能发送answer
+    if (pc.signalingState === "have-remote-offer") {
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        sendMessage(new SocketObject(userId, targetId, answer, 'link').parse2JSON());
+        console.log("Sending Answer")
+        console.log("发送answer并设置local之后的状态：",pc.signalingState);
+
+    } else {
+        console.error(`Sending Answer error current signalingState:${pc.signalingState}`);
+    }
 }
 
 const receivedAnswer = async (peerConnectionRef, answer) => {
     const pc = peerConnectionRef.current;
-    await pc.setRemoteDescription(answer);
-    console.log("Received Answer")
+    //本地存在offer才能接收answer
+    if (pc.signalingState === "have-local-offer") {
+        await pc.setRemoteDescription(answer);
+        console.log("Received Answer")
+        console.log("接收到answer之后的状态：",pc.signalingState);
+    } else {
+        console.error(`Received Answer error current signalingState:${pc.signalingState}`);
+    }
 }
 
 //交换ICE
@@ -57,9 +83,7 @@ const setLocalVideoStream = async (peerConnectionRef, localVideoRef) => {
         // 获取本地媒体流
         const gumStream = await navigator.mediaDevices.getUserMedia({
             video: true,
-            audio: true,
         });
-
         localVideoRef.current.srcObject = gumStream;
         // 将每个媒体轨道添加到 peerConnectionRef
         gumStream.getTracks().forEach(track => {
@@ -95,27 +119,27 @@ const VideoChat = forwardRef(function VideoChat({
         const localVideo = localVideoRef.current;
         const remoteVideo = localVideoRef.current;
 
-        if (!peerConnectionRef.current) {
-            const pc = new RTCPeerConnection(config);
+        const pc = new RTCPeerConnection(config);
+        peerConnectionRef.current = pc;
 
-            //当接收到媒体轨道时
-            pc.ontrack = (event) => {
-                remoteVideoRef.current.srcObject = event.streams[0];
-            };
-            pc.onicecandidate = async (event) => {
-                if (event.candidate) {
-                    sendMessage(new SocketObject(sourceUserId, targetUserId, event.candidate, 'link').parse2JSON());
-                }
-                console.log("Sending ICECandidate");
-            };
-            pc.onicegatheringstatechange = () => {
-                if (pc.iceGatheringState === "complete") {
-                    console.log("所有候选收集完成");
-                    sendMessage(new SocketObject(sourceUserId, targetUserId, 0, 'link').parse2JSON());
-                }
+        //当接收到媒体轨道时
+        pc.ontrack = (event) => {
+            remoteVideoRef.current.srcObject = event.streams[0];
+        };
+        pc.onicecandidate = async (event) => {
+            if (event.candidate) {
+                sendMessage(new SocketObject(sourceUserId, targetUserId, event.candidate, 'link').parse2JSON());
             }
-            peerConnectionRef.current = pc;
+            console.log("Sending ICECandidate");
+        };
+        pc.onicegatheringstatechange = () => {
+            if (pc.iceGatheringState === "complete") {
+                console.log("所有候选收集完成");
+                sendMessage(new SocketObject(sourceUserId, targetUserId, 0, 'link').parse2JSON());
+            }
         }
+
+
 
         if (localVideoRef.current) {
             setLocalVideoStream(peerConnectionRef, localVideoRef).then();
@@ -133,8 +157,8 @@ const VideoChat = forwardRef(function VideoChat({
                 }
             }
         }
-        handleAsReceiver();
 
+        handleAsReceiver().then();
 
         return () => {
             // 停止本地视频流
@@ -142,6 +166,7 @@ const VideoChat = forwardRef(function VideoChat({
                 const stream = localVideo.srcObject;
                 stream.getTracks().forEach(track => {
                     if (track.readyState === "live") {
+                        console.log("关闭本地摄像头");
                         track.stop();
                     }
                 });  // 停止所有轨道
@@ -153,6 +178,7 @@ const VideoChat = forwardRef(function VideoChat({
                 const stream = remoteVideo.srcObject;
                 stream.getTracks().forEach(track => {
                     if (track.readyState === "live") {
+                        console.log("关闭远程摄像头");
                         track.stop();
                     }
                 });  // 停止所有轨道
@@ -160,15 +186,18 @@ const VideoChat = forwardRef(function VideoChat({
             }
 
             // 关闭 peerConnection 并移除引用
-            if (peerConnectionRef.current) {
-                peerConnectionRef.current.ontrack = null;
-                peerConnectionRef.current.onicecandidate = null;
-                peerConnectionRef.current.close();
-                peerConnectionRef.current = null;
+
+            if (pc) {
+                console.log("关闭前pc状态",pc.signalingState);
+                pc.close();
+                console.log("关闭后pc状态",pc.signalingState);
+                peerConnectionRef.current=null;
+                console.log("清理RTCPeerConnection");
             }
+
         };
 
-    }, []);
+    }, [sourceUserId, targetUserId]);
 
 
     const handleAsSender = async (messages) => {
