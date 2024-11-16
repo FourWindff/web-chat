@@ -7,13 +7,14 @@ import useWebSocket from "./hooks/useWebSocket";
 import {messageData} from "./chatdata/historyMessage";
 import VideoChat from "./video";
 import {
-  ChatMessageObject,
+  ChatMessageObject, FILE_CHAT, INIT_FRIEND_LIST, INIT_OFFLINE_CHAT_LIST, LINK,
   SockChatList,
   SocketChatData,
-  SocketFriendList,
+  SocketFriendList, TEXT_CHAT,
   transformOfflineMessages
 } from "./chatdata/SocketData";
 import CustomInputRender from "./CustomInputRender";
+
 
 
 const roleInfo = {
@@ -57,7 +58,7 @@ export default function ChatPage({username, userId, password, serverUrl}) {
   const [currentFriendId, setCurrentFriendId] = useState("0");
 
   const LinkMode = useRef(SENDER);
-  const currentMessages = messageMap.get(currentFriendId) || [];
+  const currentMessages = messageMap.get(currentFriendId);
 
   const receiverMessageRef = useRef([]);
   const senderMessageRef = useRef([]);
@@ -65,34 +66,41 @@ export default function ChatPage({username, userId, password, serverUrl}) {
   const exchangeDataFunctionRef = useRef(null);
   const hasNotified = useRef(false);
 
+  const fileChatReplaceMapRef = useRef(new Map());
+
   const handleSocketMessage = (socketMessage) => {
     if (socketMessage === null) {
       return;
     }
     switch (socketMessage.type) {
-      case "initFriendList":
+      case INIT_FRIEND_LIST: {
         const socketFriendList = new SocketFriendList();
         Object.assign(socketFriendList, socketMessage);
         //设置好友列表
         const list = socketFriendList.friendList;
-        setFriendList(list);
         //初始化聊天记录
-        const existingUserIds = new Set(messageData.keys());
         list.forEach((user) => {
-          if (!existingUserIds.has(user.userId)) {
-            updateMessageMap(user.userId, {id: getId(), createAt: Date.now()});
+          if (!messageData.has(user.userId)) {
+            messageData.set(user.userId, [{id: getId(), createAt: Date.now()}]);
           }
         });
+        console.log("INIT_FRIEND_LIST", messageData);
+        setFriendList(list);
         break;
-      case "initOfflineChatList":
+      }
+
+      case INIT_OFFLINE_CHAT_LIST: {
         //获取当前好友的所有聊天记录，接下来需要填充到messageMap
-        const socketChatList=new SockChatList();
-        Object.assign(socketChatList,socketMessage);
-        const chatMessageList=socketChatList.chatRecordList;
-        const newMessageMap = transformOfflineMessages(chatMessageList,messageData);
+        const socketChatList = new SockChatList();
+        Object.assign(socketChatList, socketMessage);
+        const chatMessageList = socketChatList.chatRecordList;
+        const newMessageMap = transformOfflineMessages(chatMessageList, messageData, fileChatReplaceMapRef);
+        console.log("INIT_OFFLINE_CHAT_LIST", newMessageMap);
         setMessageMap(newMessageMap);
         break;
-      case "textChat":
+      }
+
+      case TEXT_CHAT: {
         const socketChatData = new SocketChatData();
         Object.assign(socketChatData, socketMessage);
         const content = socketChatData.content
@@ -105,9 +113,37 @@ export default function ChatPage({username, userId, password, serverUrl}) {
           content: content,
           createAt: createAt,
         };
+
         updateMessageMap(userId, newMessage);
         break;
-      case "link":
+      }
+
+      case FILE_CHAT: {
+        const socketChatData = new SocketChatData();
+        Object.assign(socketChatData, socketMessage);
+        const fileName = socketChatData.content
+        //存到文件读取列表，websocket接收到二进制文件后会根据这个文件名来存储。
+        const createAt = socketChatData.createAt;
+        const userId = socketChatData.sourceUserId;
+        const size = socketChatData.size;
+        const id = getId()
+        const fileMessage = {
+          role: "friend",
+          id: id,
+          createAt: createAt,
+          status: "loading",
+        }
+        //文件等待替换队列
+        fileChatReplaceMapRef.current.set(id, {fileName: fileName, size: size});
+
+        updateMessageMap(userId, fileMessage);
+
+        //需要更新前端渲染列表、
+        //需要通知用户去取数据
+        break;
+      }
+
+      case LINK:
         //设置当前会话角色是发送方还是接收方
         if (socketMessage.data?.type === "offer") {
           LinkMode.current = RECEIVER;
@@ -150,6 +186,7 @@ export default function ChatPage({username, userId, password, serverUrl}) {
 
         }
         break;
+
       default:
         console.log("未知的消息类型");
         break;
@@ -157,51 +194,59 @@ export default function ChatPage({username, userId, password, serverUrl}) {
   }
 
   const {
-    closeWebSocket,
     isConnected,
-    sendMessage
-  } = useWebSocket(serverUrl, userId, password, handleSocketMessage);
+    sendMessage,
+    sendBinary
+  } = useWebSocket(serverUrl, userId, password, handleSocketMessage, fileChatReplaceMapRef, setMessageMap);
 
   const onMessageSend = (content, attachment) => {
-    // if (attachment) {
-    //   const file = attachment[0];
-    //   const chunkSize = 1024 * 1024; // 每块 1MB
-    //   let offset = 0;
-    //
-    //   // 读取文件块
-    //   const reader = new FileReader();
-    //   reader.onload = (event) => {
-    //     if (event.target.readyState === FileReader.DONE) {
-    //       // 发送数据块
-    //       sendMessage(event.target.result);
-    //
-    //       // 继续发送下一块
-    //       offset += chunkSize;
-    //       if (offset < file.size) {
-    //         readNextChunk();
-    //       } else {
-    //         console.log('File upload completed');
-    //         sendMessage('EOF');  // 发送完成标识
-    //       }
-    //     }
-    //   };
-    //
-    //   function readNextChunk() {
-    //     const chunk = file.slice(offset, offset + chunkSize);
-    //     reader.readAsArrayBuffer(chunk);
-    //   }
-    //
-    //   readNextChunk();
-    // }
+    if (attachment && attachment[0] && attachment[0].fileInstance instanceof File) {
+      const file = attachment[0].fileInstance;
+      console.log(attachment);
+      const {uid, name, size, type} = file;
+      const fileExtension = name.split('.').pop();  // 获取文件的扩展名（后缀）
+      const fileName = `${uid}.${fileExtension}`;  // 拼接uid和文件名
+      // 发送文本消息
+      const chatDataJSON = new ChatMessageObject(FILE_CHAT, userId, currentFriendId, Date.now(), fileName, size).parse2JSON();
+      sendMessage(chatDataJSON);
 
-    // 发送文本消息
-    const chatDataJSON = new ChatMessageObject("textChat", userId, currentFriendId, Date.now(), content).parse2JSON();
-    sendMessage(chatDataJSON);
+      const chunkSize = 1024 * 1024; // 每块 1MB
+      let offset = 0;
 
+      // 读取文件块
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (event.target.readyState === FileReader.DONE) {
+          // 发送数据块
+          console.log(event.target.result);
+          sendBinary(event.target.result)
+
+          // 继续发送下一块
+          offset += chunkSize;
+          if (offset < file.size) {
+            readNextChunk();
+          } else {
+            console.log('File upload completed');
+          }
+        }
+      };
+      function readNextChunk() {
+        const chunk = file.slice(offset, offset + chunkSize);
+        reader.readAsArrayBuffer(chunk);
+      }
+      readNextChunk();
+    }
+    if (content && content.trim().length > 0) {
+      // 发送文本消息
+      const chatDataJSON = new ChatMessageObject(TEXT_CHAT, userId, currentFriendId, Date.now(), content, null).parse2JSON();
+      sendMessage(chatDataJSON);
+    }
   };
 
   const onChatsChange = (chats) => {
+
     updateMessageMap(currentFriendId, chats[chats.length - 1]);
+
   }
 
   const handleFriendSelect = (id) => {
@@ -279,32 +324,3 @@ export default function ChatPage({username, userId, password, serverUrl}) {
     </div>
   );
 }
-
-// {
-//   type:"textChat"
-//   sourceUserId:"1393402",
-//   targetUserId:"1393402",
-//   createAt: Date.now(),
-//   content:"你好"
-// }
-// {
-//   type:"fileChat"
-//   sourceUserId:"1393402",
-//     targetUserId:"1393402",
-//   createAt: Date.now(),
-//   content:"oisdhfoi.jpg"
-// }
-// //发送文件时附带文件名
-//
-// //接收文本消息
-// const content = socketMessage.data.content;
-// const createAt = socketMessage.data.createAt;
-// const sourceUserId = socketMessage.sourceUserId;
-//
-// const newMessage = {
-//   role: "friend",
-//   id: getId(),
-//   content: content,
-//   createAt: createAt,
-// };
-// updateMessageMap(userId, newMessage);

@@ -83,6 +83,7 @@ const setLocalVideoStream = async (peerConnectionRef, localVideoRef) => {
         // 获取本地媒体流
         const gumStream = await navigator.mediaDevices.getUserMedia({
             video: true,
+            audio:true,
         });
         localVideoRef.current.srcObject = gumStream;
         // 将每个媒体轨道添加到 peerConnectionRef

@@ -6,7 +6,6 @@
   "description": "Hello World!",
   "author": "Jane Doe",
   "license": "MIT",
-
   "dependencies": {
     "@douyinfe/semi-icons": "^2.68.4",
     "@douyinfe/semi-ui": "^2.68.4",
@@ -48,6 +47,9 @@
   },
   "devDependencies": {
     "electron": "^33.2.0",
+    "electron-reload": "^2.0.0-alpha.1",
+    "electron-reloader": "^1.2.3",
+    "file-saver": "^2.0.5",
     "webpack-cli": "^5.1.4"
   }
 }

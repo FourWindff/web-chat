@@ -11,6 +11,7 @@
     box-shadow: 1px 1px 5px rgba(0,0,0,0.5);
 }
 .itemInfo{
+    color: white;
     display: flex;
     flex-direction: column;
     text-overflow: ellipsis; /* 省略号处理 */
@@ -20,9 +21,10 @@
     font-size: large;
     font-weight:bolder;
     font-style: italic;
-    color: rgb(51, 141, 141);
+    color:white;
 }
 .itemLastMessage{
+
     font-size: small;
-    color: rgb(134, 134, 134);
+    color: white;
 }

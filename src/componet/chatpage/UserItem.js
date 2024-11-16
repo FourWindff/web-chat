@@ -6,7 +6,10 @@ export default function UserItem({ username, userid, isConnected }) {
     <div className={styles.userItemContainer}>
       <Avatar
         size="large"
-        style={{ margin: 4, backgroundColor: isConnected ? "green" : "red"  }}
+        style={{
+          margin: 4,
+          backgroundColor: isConnected ? "#0066cc" : "#c77131" ,
+          }}
         alt={username}
         gap={4}
       >

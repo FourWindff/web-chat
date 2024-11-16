@@ -2,8 +2,7 @@ import React, {useState} from "react";
 import styles from './AuthPage.module.css'
 import {Button, Form} from "@douyinfe/semi-ui";
 
-function Login({onSignUp,onLogin}) {
-  const defaultServerAddress = "ws://localhost:8081/chat";
+function Login({onSignUp, onLogin, defaultServerAddress}) {
   const defaultUserId = "1369050535";
   const defaultPassword = "123";
   return (
@@ -48,8 +47,7 @@ function Login({onSignUp,onLogin}) {
   )
 }
 
-function Register({onBack, onRegister}) {
-  const defaultServerAddress = "ws://localhost:8081/chat";
+function Register({onBack, onRegister, defaultServerAddress}) {
   return (
     <div>
       <h2>注册 <span>Web-Chat</span></h2>
@@ -92,7 +90,7 @@ function Register({onBack, onRegister}) {
   )
 }
 
-export default function AuthPage({onLogin, onRegistry}) {
+export default function AuthPage({onLogin, onRegistry, defaultServerAddress}) {
   const [login, setLogin] = useState(true);
 
   const handleAuthChange = () => {
@@ -104,9 +102,9 @@ export default function AuthPage({onLogin, onRegistry}) {
       <div className={styles.formOutSideContainer}>
         {
           login ?
-            <Login onLogin={onLogin} onSignUp={handleAuthChange}/>
+            <Login onLogin={onLogin} onSignUp={handleAuthChange} defaultServerAddress={defaultServerAddress}/>
             :
-            <Register onRegister={onRegistry} onBack={handleAuthChange}/>
+            <Register onRegister={onRegistry} onBack={handleAuthChange} defaultServerAddress={defaultServerAddress}/>
         }
       </div>
     </div>

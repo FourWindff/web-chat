@@ -2,14 +2,19 @@ const LOGIN = "login";
 const REGISTER = "register";
 const TEXT_CHAT = "textChat";
 const FILE_CHAT = "fileChat";
+const LINK = "link";
 const INIT_FRIEND_LIST = "initFriendList";
 const INIT_OFFLINE_CHAT_LIST = "initOfflineChatList";
+const ADD_FRIEND_OFFER = "addFriendOffer";
+const ADD_FRIEND_ANSWER = "addFriendAnswer";
+
 
 export {
   LOGIN,
   REGISTER,
   TEXT_CHAT,
   FILE_CHAT,
+  LINK,
   INIT_FRIEND_LIST,
   INIT_OFFLINE_CHAT_LIST
 }
@@ -67,7 +72,7 @@ class RegisterObject {
 
 //发送聊天数据载体
 class ChatMessageObject {
-  constructor(type, sourceUserId, targetUserId, createAt, content) {
+  constructor(type, sourceUserId, targetUserId, createAt, content, size) {
     this.type = type;
     this.sourceUserId = sourceUserId;
     this.targetUserId = targetUserId;
@@ -75,6 +80,7 @@ class ChatMessageObject {
     //当type为textChat时 content为字符串
     //当type为fileChat时 content为文件名
     this.content = content;
+    this.size = size;
   }
 
   parse2JSON() {
@@ -93,6 +99,7 @@ class SocketAuthData {
     this.password = password;
   }
 }
+
 //接收好友列表载体
 class SocketFriendList {
   constructor(type, userId, friendList) {
@@ -101,6 +108,7 @@ class SocketFriendList {
     this.friendList = friendList;
   }
 }
+
 //接收用户聊天记录
 class SockChatList {
   constructor(type, chatList) {
@@ -108,9 +116,10 @@ class SockChatList {
     this.chatRecordList = chatList;
   }
 }
+
 //接收聊天信息
-class SocketChatData{
-  constructor(type, sourceUserId, targetUserId, createAt, content) {
+class SocketChatData {
+  constructor(type, sourceUserId, targetUserId, createAt, content, size) {
     this.type = type;
     this.sourceUserId = sourceUserId;
     this.targetUserId = targetUserId;
@@ -118,38 +127,47 @@ class SocketChatData{
     //当type为textChat时 content为字符串
     //当type为fileChat时 content为文件名
     this.content = content;
+    this.size = size;
   }
 }
 
-function transformOfflineMessages(chatRecordList, messageData) {
+//当用户上线时开始处理离线时为接收的消息
+function transformOfflineMessages(chatRecordList, messageData, fileChatToReplaceRef) {
+  console.log("离线时未接收的消息", chatRecordList);
+  console.log("此时", messageData);
   const updatedMap = new Map(messageData);
 
-
   chatRecordList.forEach((chatRecord) => {
-    const { senderId, messageType, messageContent, createAt} = chatRecord;
+    const {senderId, messageType, messageContent, createAt, size} = chatRecord;
     const senderRole = 'friend';
 
-    // 判断发送者和接收者角色，并为它们创建消息
-    if(messageType===TEXT_CHAT){
-
+    //未接收消息为文本
+    if (messageType === TEXT_CHAT) {
+      const senderMessage = {
+        role: senderRole,
+        id: getId(),
+        createAt: createAt,
+        content: messageContent,
+      };
+      updatedMap.has(senderId) ?
+        updatedMap.get(senderId).push(senderMessage) :
+        updatedMap.set(senderId, [senderMessage]);
     }
-    if(messageType===FILE_CHAT){
-
+    //未接收消息为文件记录（不是文件本体）
+    if (messageType === FILE_CHAT) {
+      const id = getId();
+      const senderFileMessage = {
+        role: senderRole,
+        id: id,
+        createAt: createAt,
+        status: "loading"
+      }
+      fileChatToReplaceRef.current.set(id, {fileName: messageContent, size: size})
+      updatedMap.has(senderId) ?
+        updatedMap.get(senderId).push(senderFileMessage) :
+        updatedMap.set(senderId, [senderFileMessage]);
     }
-    const senderMessage = {
-      role: senderRole,
-      id: getId(),
-      createAt: createAt || Date.now(), // 使用消息的创建时间，如果没有，则使用当前时间
-      content: messageContent,
-    };
-
-    // 将消息按发送者ID和接收者ID存入Map
-    if (!updatedMap.has(senderId)) {
-      updatedMap.set(senderId, []);
-    }
-    updatedMap.get(senderId).push(senderMessage);
-
-  });
+  })
   return updatedMap;
 }
 
