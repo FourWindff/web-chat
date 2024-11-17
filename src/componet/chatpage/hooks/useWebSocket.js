@@ -3,6 +3,35 @@
 import {useEffect, useRef, useState} from "react";
 import {INIT_FRIEND_LIST, INIT_OFFLINE_CHAT_LIST, LoginObject, SocketObject} from "../chatdata/SocketData";
 import {messageData} from "../chatdata/historyMessage";
+import CryptoJS from 'crypto-js';
+
+const secretKey = 'QQnLh2njgXra91fz/5BF6/Rz26/jLUG495h1gllUpMA=';
+
+function encryptData(data) {
+  return CryptoJS.AES.encrypt(data, secretKey).toString();
+}
+
+
+function concatenateArrayBuffers(arrayBuffers) {
+  // 计算所有 ArrayBuffer 的总字节长度
+  const totalLength = arrayBuffers.reduce((acc, buffer) => acc + buffer.byteLength, 0);
+
+  // 创建一个新的 ArrayBuffer
+  const resultBuffer = new ArrayBuffer(totalLength);
+  const resultView = new Uint8Array(resultBuffer);
+
+  let offset = 0;
+
+  // 将每个 ArrayBuffer 的内容复制到新的 ArrayBuffer 中
+  for (const buffer of arrayBuffers) {
+    const view = new Uint8Array(buffer);
+    resultView.set(view, offset);
+    offset += view.byteLength;
+  }
+  console.log(resultBuffer);
+
+  return resultBuffer;
+}
 
 export default function useWebSocket(
   url,
@@ -19,7 +48,7 @@ export default function useWebSocket(
   // 发送消息函数
   const sendMessage = (message) => {
     if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-      socket.current.send(message);
+      socket.current.send(encryptData(message));
       console.log("Socket sending message:", JSON.parse(message))
     } else {
       console.log("WebSocket is not open.");
@@ -41,16 +70,18 @@ export default function useWebSocket(
     }
   }
 
-  const saveFile = (data, fileChatReplaceMap, messageData) => {
-    console.log("转换后的",Object.fromEntries(fileChatReplaceMap));
-    console.log("转换后的",Object.fromEntries(messageData));
-    window.electron.send('save-file', data, Object.fromEntries(fileChatReplaceMap), Object.fromEntries(messageData));
+  const saveFile = (data, fileChatReplaceMap) => {
+    // 发送消息到主进程
+    window.electron.send(
+      'save-file',
+      data,
+      fileChatReplaceMap,
+    )
   }
 
-  const handleSaveFileResponse = (event, response) => {
+  const handleSaveFileResponse = (response) => {
     if (response.success) {
-      setMessageMap(response.newMessageMap);
-      console.log("File saved and message map updated.");
+      console.log("File saved ");
     } else {
       console.error("Failed to save file:", response.error);
     }
@@ -80,14 +111,19 @@ export default function useWebSocket(
       } else if (data instanceof ArrayBuffer) {
         console.log("Received binary data as ArrayBuffer", data);
         console.log("文件替换队列：", fileChatReplaceMapRef.current);
-        const chunk = new Uint8Array(data);
         //拼接
-        receiveChunksRef.current.byteLength += chunk.byteLength;
-        receiveChunksRef.current.array.push(...chunk);
+        receiveChunksRef.current.byteLength += data.byteLength;
+        receiveChunksRef.current.array.push(data);
         //组合
-        if (chunk.byteLength < 1024 * 1024) {
-          const result = receiveChunksRef.current.array;
-          // saveFile(result, fileChatReplaceMapRef.current, messageData);
+        if (data.byteLength < 1024 * 1024) {
+          const totalLength=receiveChunksRef.current.byteLength
+          console.log(totalLength);
+          console.log("文件接收完毕",totalLength);
+          const result=concatenateArrayBuffers(receiveChunksRef.current.array);
+          saveFile(result, fileChatReplaceMapRef.current, messageData);
+          receiveChunksRef.current.byteLength=0;
+          receiveChunksRef.current.array=[];
+
         }
         // 处理 ArrayBuffer 数据
       } else if (typeof data === "string") {
@@ -104,12 +140,12 @@ export default function useWebSocket(
 
     socket.current = ws;
 
-    // window.electron.receive('save-file-response', handleSaveFileResponse);
+    window.electron.receive('save-file-response', handleSaveFileResponse);
 
     // 组件卸载时清理连接
     return () => {
       ws.close();
-      // window.electron.removeListener('save-file-response', handleSaveFileResponse);
+      window.electron.removeListener('save-file-response', handleSaveFileResponse);
     };
 
   }, [url, userId]); // 依赖 URL，URL 变化时重新连接

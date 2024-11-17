@@ -1,7 +1,8 @@
 import styles from './css/FriendList.module.css';
 import FriendItem from './FriendItem';
+import {AddFriend} from "./AddFriend";
 
-export default function FriendList({ friendList, onSelectFriend }) {
+export default function FriendList({ friendList, onSelectFriend ,onAddRequest}) {
 
   return (
     <div className={styles.listContainer}>
@@ -13,6 +14,7 @@ export default function FriendList({ friendList, onSelectFriend }) {
           onSelect={() => onSelectFriend(friend.userId)}
         />
       ))}
+      <AddFriend onAddRequest={onAddRequest} />
     </div>
   );
 }

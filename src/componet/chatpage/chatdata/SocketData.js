@@ -6,7 +6,8 @@ const LINK = "link";
 const INIT_FRIEND_LIST = "initFriendList";
 const INIT_OFFLINE_CHAT_LIST = "initOfflineChatList";
 const ADD_FRIEND_OFFER = "addFriendOffer";
-const ADD_FRIEND_ANSWER = "addFriendAnswer";
+const ADD_FRIEND_SUCCESS = "addFriendSuccess";
+const ADD_FRIEND_FAIL = "addFriendFail";
 
 
 export {
@@ -16,7 +17,12 @@ export {
   FILE_CHAT,
   LINK,
   INIT_FRIEND_LIST,
-  INIT_OFFLINE_CHAT_LIST
+  INIT_OFFLINE_CHAT_LIST,
+  ADD_FRIEND_OFFER,
+  ADD_FRIEND_SUCCESS,
+  ADD_FRIEND_FAIL
+
+
 }
 
 function getId() {
@@ -160,7 +166,7 @@ function transformOfflineMessages(chatRecordList, messageData, fileChatToReplace
         role: senderRole,
         id: id,
         createAt: createAt,
-        status: "loading"
+        content:`文件：${messageContent}`
       }
       fileChatToReplaceRef.current.set(id, {fileName: messageContent, size: size})
       updatedMap.has(senderId) ?

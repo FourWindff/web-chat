@@ -25,6 +25,7 @@ function Login({onSignUp, onLogin, defaultServerAddress}) {
         <Form.Input
           field='password'
           label='Password'
+          mode={"password"}
           style={{width: '100%'}}
           placeholder='Enter your password'
           initValue={defaultPassword}/>
@@ -68,6 +69,7 @@ function Register({onBack, onRegister, defaultServerAddress}) {
           <Form.Input
             field='userId'
             label='userId'
+            mode={"password"}
             style={{width: '100%'}}
             placeholder='Enter your userid'/>
           <Form.Input

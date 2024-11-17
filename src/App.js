@@ -4,12 +4,25 @@ import styles from "./App.module.css";
 import AuthPage from "./componet/authpage";
 import {useState} from "react";
 import {LoginObject, SocketAuthData, RegisterObject} from "./componet/chatpage/chatdata/SocketData";
+import CryptoJS from 'crypto-js';
 
-const defaultServerAddress = "ws://172.20.153.91:8081/chat";
+const secretKey = 'QQnLh2njgXra91fz/5BF6/Rz26/jLUG495h1gllUpMA=';
+
+function encryptData(data) {
+  return CryptoJS.AES.encrypt(data, getKeyFromBase64(secretKey)).toString();
+}
+function getKeyFromBase64(base64Key) {
+  return Buffer.from(base64Key, 'base64');
+}
+
+const defaultServerAddress = "ws://localhost:8081/chat";
 const LOGIN_SUCCESS = 100;
 const LOGIN_FAILURE = 101;
 const REGISTER_SUCCESS = 200;
 const REGISTER_FAILURE = 201;
+
+
+
 
 export default function App() {
   const [isLogin, setIsLogin] = useState(false);
@@ -60,7 +73,7 @@ export default function App() {
     console.log(`用户id：${userId} 密码: ${password} 尝试连接: ${serverAddress}`);
     if (websocket.current.readyState === WebSocket.OPEN) {
       const loginJSON = new LoginObject(userId, password).parse2JSON()
-      websocket.current.send(loginJSON);
+      websocket.current.send(encryptData(loginJSON));
     }
   }
   const handleRegister = (values) => {
@@ -74,7 +87,7 @@ export default function App() {
 
     if (websocket.current.readyState === WebSocket.OPEN) {
       const registerJSON = new RegisterObject(userId, username, password).parse2JSON()
-      websocket.current.send(registerJSON);
+      websocket.current.send(encryptData(registerJSON));
     }
   }
 

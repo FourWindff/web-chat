@@ -2,7 +2,8 @@
   "name": "web-chat",
   "version": "0.1.0",
   "private": true,
-  "main": "public/electron.js",
+  "main": "electron.js",
+  "homepage": "./",
   "description": "Hello World!",
   "author": "Jane Doe",
   "license": "MIT",
@@ -46,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "crypto-js": "^4.2.0",
     "electron": "^33.2.0",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-reloader": "^1.2.3",
