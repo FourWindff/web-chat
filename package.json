@@ -2,7 +2,7 @@
   "name": "web-chat",
   "version": "0.1.0",
   "private": true,
-  "main": "electron.js",
+  "main": "./electron.js",
   "homepage": "./",
   "description": "Hello World!",
   "author": "Jane Doe",
@@ -10,7 +10,7 @@
   "dependencies": {
     "@douyinfe/semi-icons": "^2.68.4",
     "@douyinfe/semi-ui": "^2.68.4",
-    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "react": "^18.3.1",
@@ -53,5 +53,47 @@
     "electron-reloader": "^1.2.3",
     "file-saver": "^2.0.5",
     "webpack-cli": "^5.1.4"
+  },
+  "build": {
+    "appId": "Web-Chat",
+    "productName": "Web-Chat",
+    "copyright": "MIT",
+    "directories": {
+      "buildResources": "build",
+      "output": "dist"
+    },
+    "nsis": {
+      "oneClick": false,
+      "language": "2052",
+      "perMachine": true,
+      "allowToChangeInstallationDirectory": true
+    },
+    "win": {
+      "icon": "./build/web-chat.png",
+      "target": "nsis"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility",
+      "icon": "./build/web-chat.png",
+      "desktop": {
+        "Name": "Web-Chat",
+        "Comment": "A simple web chat application",
+        "Exec": "web-chat",
+        "Icon": "web-chat",
+        "Type": "Application",
+        "StartupNotify": true
+      }
+    },
+    "files": [
+      "build/**/*",
+      "./electron.js"
+    ],
+    "extends": null
   }
+
 }
+

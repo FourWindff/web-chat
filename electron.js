@@ -19,7 +19,7 @@ function createWindow() {
     },
   });
   win.setMenuBarVisibility(false);
-  win.loadURL('http://localhost:3000'); // 加载 React 应用
+  win.loadFile("build/index.html");
   win.show();
 }
 
