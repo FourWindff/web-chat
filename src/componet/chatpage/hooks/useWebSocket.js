@@ -2,14 +2,6 @@
 
 import {useEffect, useRef, useState} from "react";
 import {INIT_FRIEND_LIST, INIT_OFFLINE_CHAT_LIST, LoginObject, SocketObject} from "../chatdata/SocketData";
-import {messageData} from "../chatdata/historyMessage";
-import CryptoJS from 'crypto-js';
-
-const secretKey = 'QQnLh2njgXra91fz/5BF6/Rz26/jLUG495h1gllUpMA=';
-
-function encryptData(data) {
-  return CryptoJS.AES.encrypt(data, secretKey).toString();
-}
 
 
 function concatenateArrayBuffers(arrayBuffers) {
@@ -38,8 +30,7 @@ export default function useWebSocket(
   userId,
   password,
   onSocketMessage,
-  fileChatReplaceMapRef,
-  setMessageMap
+  fileChatReplaceMapRef
 ) {
   const socket = useRef(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -48,8 +39,8 @@ export default function useWebSocket(
   // 发送消息函数
   const sendMessage = (message) => {
     if (socket.current && socket.current.readyState === WebSocket.OPEN) {
-      socket.current.send(encryptData(message));
-      console.log("Socket sending message:", JSON.parse(message))
+      socket.current.send(message);
+      console.log("Socket sending message:", message)
     } else {
       console.log("WebSocket is not open.");
     }
@@ -116,14 +107,13 @@ export default function useWebSocket(
         receiveChunksRef.current.array.push(data);
         //组合
         if (data.byteLength < 1024 * 1024) {
-          const totalLength=receiveChunksRef.current.byteLength
+          const totalLength = receiveChunksRef.current.byteLength
           console.log(totalLength);
-          console.log("文件接收完毕",totalLength);
-          const result=concatenateArrayBuffers(receiveChunksRef.current.array);
-          saveFile(result, fileChatReplaceMapRef.current, messageData);
-          receiveChunksRef.current.byteLength=0;
-          receiveChunksRef.current.array=[];
-
+          console.log("文件接收完毕", totalLength);
+          const result = concatenateArrayBuffers(receiveChunksRef.current.array);
+          saveFile(result, fileChatReplaceMapRef.current);
+          receiveChunksRef.current.byteLength = 0;
+          receiveChunksRef.current.array = [];
         }
         // 处理 ArrayBuffer 数据
       } else if (typeof data === "string") {

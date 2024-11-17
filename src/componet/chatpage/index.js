@@ -1,15 +1,21 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import {Chat, Typography, Notification} from "@douyinfe/semi-ui";
 import styles from "./css/ChatPage.module.css";
 import FriendList from "./FriendList";
 import UserItem from "./UserItem";
 import useWebSocket from "./hooks/useWebSocket";
-import {messageData} from "./chatdata/historyMessage";
+
 import VideoChat from "./video";
+
 import {
-  ADD_FRIEND_ANSWER, ADD_FRIEND_FAIL,
-  ADD_FRIEND_OFFER, ADD_FRIEND_SUCCESS,
-  ChatMessageObject, FILE_CHAT, INIT_FRIEND_LIST, INIT_OFFLINE_CHAT_LIST, LINK,
+  ADD_FRIEND_FAIL,
+  ADD_FRIEND_OFFER,
+  ADD_FRIEND_SUCCESS,
+  FILE_CHAT,
+  INIT_FRIEND_LIST,
+  INIT_OFFLINE_CHAT_LIST,
+  LINK,
+  ChatMessageObject,
   SockChatList,
   SocketChatData,
   SocketFriendList, SocketObject, TEXT_CHAT,
@@ -17,6 +23,19 @@ import {
 } from "./chatdata/SocketData";
 import CustomInputRender from "./CustomInputRender";
 
+let messageData = new Map([
+  [
+    "0",
+    [
+      {
+        role: "system",
+        id: "1",
+        createAt: 1715676751919,
+        content: "welecome to web-chat",
+      },
+    ],
+  ]
+]);
 
 const roleInfo = {
   user: {
@@ -51,7 +70,7 @@ const uploadTipProps = {content: "自定义上传按钮提示信息"};
 const SENDER = 0;
 const RECEIVER = 1;
 
-
+export {messageData}
 export default function ChatPage({username, userId, password, serverUrl}) {
   const [messageMap, setMessageMap] = useState(messageData);
   const [friendList, setFriendList] = useState([]);
@@ -211,14 +230,16 @@ export default function ChatPage({username, userId, password, serverUrl}) {
                     const jsonData = new SocketObject(userId, sourceUserId, username, ADD_FRIEND_SUCCESS).parse2JSON();
                     sendMessage(jsonData);
                     //接收方同意
-                    setFriendList(prevList => [...prevList, {userId: sourceUserId, data: sourceUsername}]);
+
                     updateMessageMap(sourceUserId, {
                       role: "friend",
                       id: getId(),
                       createAt: Date.now(),
                       content: "我们已经成为朋友啦～"
                     });
-                    Notification.close(id)
+                    setFriendList(prevList => [...prevList, {userId: sourceUserId, username: sourceUsername}]);
+
+                    Notification.close(id);
                   }}>同意</Text>
                 <Text
                   style={{
@@ -256,7 +277,7 @@ export default function ChatPage({username, userId, password, serverUrl}) {
           createAt: Date.now(),
           content: "我们已经成为朋友啦～"
         })
-        setFriendList(prevList => [...prevList, {userId: sourceUserId, data: sourceUsername}]);
+        setFriendList(prevList => [...prevList, {userId: sourceUserId, username: sourceUsername}]);
         Notification.success(opts);
         break;
       }
@@ -280,20 +301,37 @@ export default function ChatPage({username, userId, password, serverUrl}) {
     }
   }
 
+  useEffect(() => {
+    // 获取本地保存的聊天记录
+    const dataBaseName="chatHistory"+userId;
+    const savedMessageArray = localStorage.getItem(dataBaseName);
+    if (savedMessageArray) {
+      const savedMessageMap = new Map(JSON.parse(savedMessageArray));
+      console.log("本地已保存的聊天记录", savedMessageMap);
+      messageData=savedMessageMap
+      setMessageMap(savedMessageMap);
+    }else {
+      console.log("没有保存的数据")
+    }
+  }, [userId]);
+
   const {
     isConnected,
     sendMessage,
     sendBinary
-  } = useWebSocket(serverUrl, userId, password, handleSocketMessage, fileChatReplaceMapRef, setMessageMap);
+  } = useWebSocket(serverUrl, userId, password, handleSocketMessage, fileChatReplaceMapRef);
 
 
   const onMessageSend = (content, attachment) => {
     if (attachment && attachment[0] && attachment[0].fileInstance instanceof File) {
       const file = attachment[0].fileInstance;
-      console.log(attachment);
+      console.log(file);
       const {uid, name, size, type} = file;
+      const fileName=getId()+name;
       // 发送文本消息
-      const chatDataJSON = new ChatMessageObject(FILE_CHAT, userId, currentFriendId, Date.now(), name, size).parse2JSON();
+      console.log("file-size",file.size);
+      console.log("size",size);
+      const chatDataJSON = new ChatMessageObject(FILE_CHAT, userId, currentFriendId, Date.now(), fileName, size).parse2JSON();
       sendMessage(chatDataJSON);
 
       const chunkSize = 1024 * 1024; // 每块 1MB
@@ -338,15 +376,13 @@ export default function ChatPage({username, userId, password, serverUrl}) {
   };
 
   const onChatsChange = (chats) => {
-
     updateMessageMap(currentFriendId, chats[chats.length - 1]);
-
   }
 
   const handleFriendSelect = (id) => {
     setCurrentFriendId(id);
   };
-  //即时更新
+
   const updateMessageMap = (conversationId, newMessage) => {
     setMessageMap((prevMessageMap) => {
       // 创建 `Map` 的副本
@@ -361,6 +397,14 @@ export default function ChatPage({username, userId, password, serverUrl}) {
       // 返回更新后的 Map
       return updatedMap;
     });
+    const prevMessage=messageData.get(conversationId) || [];
+    messageData.set(conversationId, [...prevMessage, newMessage]);
+    console.log("更新之后的messageData:",messageData);
+    // 保存聊天记录
+    if (messageData.size > 0) {
+      localStorage.setItem('chatHistory'+userId, JSON.stringify(Array.from(messageData)));
+      console.log("保存聊天记录:", JSON.stringify(Array.from(messageData)));
+    }
   };
 
   const handleOpenCamera = () => {

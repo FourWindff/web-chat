@@ -3,8 +3,8 @@ import styles from './AuthPage.module.css'
 import {Button, Form} from "@douyinfe/semi-ui";
 
 function Login({onSignUp, onLogin, defaultServerAddress}) {
-  const defaultUserId = "1369050535";
-  const defaultPassword = "123";
+  // const defaultUserId = "1369050535";
+  // const defaultPassword = "123";
   return (
     <div>
       <h2>登录 <span>Web-Chat</span></h2>
@@ -21,14 +21,14 @@ function Login({onSignUp, onLogin, defaultServerAddress}) {
           label='userId'
           style={{width: '100%'}}
           placeholder='Enter your userid'
-          initValue={defaultUserId}/>
+/>
         <Form.Input
           field='password'
           label='Password'
           mode={"password"}
           style={{width: '100%'}}
           placeholder='Enter your password'
-          initValue={defaultPassword}/>
+/>
         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
           <p>
             <span>Or</span>
@@ -69,12 +69,12 @@ function Register({onBack, onRegister, defaultServerAddress}) {
           <Form.Input
             field='userId'
             label='userId'
-            mode={"password"}
             style={{width: '100%'}}
             placeholder='Enter your userid'/>
           <Form.Input
             field='password'
             label='Password'
+            mode={"password"}
             style={{width: '100%'}}
             placeholder='Enter your password'/>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>

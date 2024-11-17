@@ -12,7 +12,6 @@ export default function FriendItem({ username, lastMessage, onSelect }) {
       </Avatar>
       <div className={styles.itemInfo}>
         <div className={styles.itemUsername}>{username}</div>
-        <div className={styles.itemLastMessage}>{lastMessage}</div>
       </div>
     </div>
   );

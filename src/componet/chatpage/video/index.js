@@ -1,6 +1,6 @@
 import styles from './video.module.css'
 import {SocketObject} from "../chatdata/SocketData";
-import {forwardRef, useEffect, useImperativeHandle, useRef} from 'react';
+import {forwardRef, useEffect, useImperativeHandle, useRef, useState} from 'react';
 import {Button} from "@douyinfe/semi-ui";
 
 
@@ -108,6 +108,12 @@ const VideoChat = forwardRef(function VideoChat({
 
     const remoteVideoRef = useRef(null);
     const localVideoRef = useRef(null);
+    const [isMuted,setIsMuted]=useState(false);
+
+    const mutedButtonText=isMuted? "关闭静音":"静音";
+    const handleMutedButtonClick = () => {
+        setIsMuted(prevState => !prevState);
+    }
 
     const peerConnectionRef = useRef(null);
     const config = null;
@@ -225,6 +231,8 @@ const VideoChat = forwardRef(function VideoChat({
         onCancelClick();
     }
 
+
+
     return (
         <div className={styles.container}>
             <div className={styles.videoWindowContainer}>
@@ -232,7 +240,7 @@ const VideoChat = forwardRef(function VideoChat({
                     <video
                         ref={remoteVideoRef}
                         autoPlay
-                        muted
+                        muted={isMuted}
                         className={styles.video}
                     />
                 </div>
@@ -240,13 +248,14 @@ const VideoChat = forwardRef(function VideoChat({
                     <video
                         ref={localVideoRef}
                         autoPlay
-                        muted
+                        muted={isMuted}
                         className={styles.video}
                     />
                 </div>
             </div>
             <Button onClick={handleConnect} type={"primary"}>连接</Button>
             <Button onClick={handleDisConnect} type={"primary"}>取消</Button>
+            <Button onClick={handleMutedButtonClick} type={"primary"}>{mutedButtonText}</Button>
         </div>
     );
 });

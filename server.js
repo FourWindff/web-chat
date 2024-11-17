@@ -1,17 +1,13 @@
 const crypto = require('crypto');
 
-// 生成 AES 密钥
-function generateAESKey() {
-  // 选择密钥长度（128、192 或 256 位）
-  const keyLength = 32; // 256 位
-  const key = crypto.randomBytes(keyLength); // 生成随机字节
+// 生成一个 16 字节的随机密钥（128 位）
+const key128 = crypto.randomBytes(16).toString('hex'); // 以十六进制字符串表示
+console.log("Generated 128-bit Key:", key128);
 
-  // 将密钥转换为 Base64 字符串
-  const base64Key = key.toString('base64');
+// 生成一个 24 字节的随机密钥（192 位）
+const key192 = crypto.randomBytes(24).toString('hex');
+console.log("Generated 192-bit Key:", key192);
 
-  console.log("Generated AES Key (Base64):", base64Key);
-  return key; // 返回生成的密钥
-}
-
-// 调用函数生成 AES 密钥
-generateAESKey();
+// 生成一个 32 字节的随机密钥（256 位）
+const key256 = crypto.randomBytes(32).toString('hex');
+console.log("Generated 256-bit Key:", key256);
