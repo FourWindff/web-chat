@@ -18,7 +18,7 @@ export default function App() {
   const formRef = useRef(null);
   const websocket = useRef(null);
 
-  const [serverAddress, setServerAddress] = useState("");
+  const [serverAddress, setServerAddress] = useState("ws://localhost:8080/chat");
   const [reConnect, setReConnect] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
   const [tipText, setTipText] = useState("");
@@ -30,6 +30,7 @@ export default function App() {
     ws.onopen = () => {
       console.log("成功连上服务器");
       setIsConnected(true);
+      setTipText("已成功和服务器连接");
     }
     // 接收消息时
     ws.onmessage = (event) => {

@@ -2,7 +2,7 @@
   "name": "web-chat",
   "version": "0.1.0",
   "private": true,
-  "main": "./electron.js",
+  "main": "./main.js",
   "homepage": "./",
   "description": "Hello World!",
   "author": {
@@ -77,33 +77,13 @@
       "allowToChangeInstallationDirectory": true
     },
     "win": {
-      "icon": "./build/web-chat.png",
-      "target": [
-        {
-          "target": "nsis"
-        }
-      ]
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb"
-      ],
-      "category": "Utility",
-      "icon": "./build/web-chat.png",
-      "executableName": "web-chat",
-      "desktop": {
-        "Name": "Web-Chat",
-        "Comment": "A simple web chat application",
-
-        "Icon": "web-chat",
-        "Type": "Application",
-        "StartupNotify": true
-      }
+      "icon": "./build/send_plane_plane_icon_264229.png",
+      "target": "nsis"
     },
     "files": [
       "build/**/*",
-      "./electron.js"
+      "./main.js",
+      "./preload.js"
     ],
     "extends": null
   }
